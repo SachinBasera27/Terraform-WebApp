@@ -1,0 +1,16 @@
+#working Directory
+.terraform/
+
+#executable files
+terraform.exe
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Plan files
+*.tfplan
+*.plan
+
+#Github Actions files 
+.github/workflows/*.yml
