@@ -23,7 +23,7 @@ resource "azurerm_linux_web_app" "example" {
   site_config {
     ftps_state = "AllAllowed"
     worker_count = 2
-
+    always_on = true
   }
 
   logs{
@@ -36,6 +36,40 @@ resource "azurerm_linux_web_app" "example" {
       }
     }
   }
+
+  auth_settings_v2 {
+    login {
+      token_store_enabled = true
+
+    }
+
+    auth_enabled = true
+    unauthenticated_action = "Return401"
+    default_provider = "azureactivedirectory"
+
+    active_directory_v2 {
+      client_id = "3b0c09a6-c758-429e-ba3f-1f05f49cbaaa"
+      tenant_auth_endpoint = "https://login.microsoftonline.com/9afed3ec-3a05-4b0c-92a9-07ac07939ec5/"
+    }
+  }
+
+  backup {
+    name = "test-backup"
+
+    schedule {
+      retention_period_days = 8
+      frequency_interval = 2
+      frequency_unit = "Day"
+      keep_at_least_one_backup = true
+      }
+
+    storage_account_url = "https://${azurerm_storage_account.stacc-tf-webapp.name}.blob.core.windows.net/${azurerm_storage_container.cont-tf-webapp.name}${module.data.sas_url_query_string}&sr=b}"
+  }
+
+  identity {type = "SystemAssigned , UserAssigned"}
+
+
+
 }
 
 
