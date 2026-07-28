@@ -1,12 +1,7 @@
-resource "azurerm_resource_group" "RG-GH-Terraform" {
-  name     = "rg-terraform-webapp"
-  location = "Central US"
-}
-
 resource "azurerm_storage_account" "stacc-tf-webapp" {
-  name                     = "stacctf-webapp"
-  resource_group_name      = azurerm_resource_group.RG-GH-Terraform.name
-  location                 = azurerm_resource_group.RG-GH-Terraform.location
+  name                     = "stacctfwebapp"
+  resource_group_name      = module.data.Rg-name
+  location                 = module.data.Rg-location
   account_tier             = "Standard"
   account_kind             = "BlobStorage"
   access_tier              = "Hot"

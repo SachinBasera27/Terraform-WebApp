@@ -1,7 +1,7 @@
 resource "azurerm_key_vault" "kv-tf-webapp" {
   name                        = "kv-tf-wa"
-  location                    = module.resource.location
-  resource_group_name         = module.resource.name
+  location                    = module.data.Rg-location
+  resource_group_name         = module.data.Rg-name
   rbac_authorization_enabled  = true
   enabled_for_disk_encryption = true
   tenant_id                   = module.data.tenant_id
@@ -13,22 +13,6 @@ resource "azurerm_key_vault" "kv-tf-webapp" {
 
   sku_name = "standard"
 
-  access_policy {
-
-    tenant_id = module.data.tenant_id
-    object_id = module.data.object_id
-    application_id = module.data.application_id
-
-    key_permissions = [
-      "Get",
-    ]
-
-    secret_permissions = [
-      "Get",
-    ]
-
-    storage_permissions = [
-      "Get",
-    ]
-  }
 }
+
+# https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/key_vault
