@@ -32,3 +32,6 @@ data "azurerm_storage_account_sas" "example" {
     filter  = false
   }
 }
+
+data "azurerm_client_config" "current" {}
+

@@ -13,4 +13,3 @@ terraform.exe
 *.plan
 
 #Github Actions files 
-.github/workflows/*.yml
