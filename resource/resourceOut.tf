@@ -1,15 +1,20 @@
-output "name" {
-    value = azurerm_resource_group.RG-GH-Terraform.name
+output "cont-id"{
+  value = azurerm_storage_container.cont-tf-webapp.id
 }
 
-output "location" {
-    value = azurerm_resource_group.RG-GH-Terraform.location
+output "cont-name"{
+  value = azurerm_storage_container.cont-tf-webapp.name
 }
 
-output "blob"{
-    value = azurerm_storage_container.cont-tf-webapp.id
-}
-
-output "container" {
+output "storage-account-id" {
   value = azurerm_storage_account.stacc-tf-webapp.id
+}
+
+output "storage-account-name" {
+  value = azurerm_storage_account.stacc-tf-webapp.name
+}
+
+output "sas_url_query_string" {
+  value = data.azurerm_storage_account_sas.SAS_URL.sas
+  sensitive = true
 }

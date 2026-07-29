@@ -1,5 +1,6 @@
 #working Directory
 .terraform/
+.terraform*
 
 #executable files
 terraform.exe
@@ -13,4 +14,3 @@ terraform.exe
 *.plan
 
 #Github Actions files 
-.github/workflows/*.yml
