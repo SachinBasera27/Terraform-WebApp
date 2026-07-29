@@ -1,7 +1,3 @@
-output "sas_url_query_string" {
-  value = data.azurerm_storage_account_sas.example.sas
-}
-
 output "tenant_id" {
   value = data.azurerm_client_config.current.tenant_id
 }

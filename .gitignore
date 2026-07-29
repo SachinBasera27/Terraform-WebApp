@@ -1,5 +1,6 @@
 #working Directory
 .terraform/
+.terraform*
 
 #executable files
 terraform.exe
