@@ -1,6 +1,6 @@
 # Terraform Azure Linux Web App
 
-A learning-focused Terraform project that provisions Azure infrastructure for a Linux Web App, including an App Service Plan, Storage Account, Key Vault, Azure authentication settings, and remote Terraform state.
+A learning-focused Terraform project that provisions Azure infrastructure for a Linux Web App, including an App Service Plan, Storage Account, Key Vault, Azure authentication settings (OIDC), and remote Terraform state.
 
 The project is being built to learn practical Cloud and DevOps concepts, including:
 
@@ -11,8 +11,6 @@ The project is being built to learn practical Cloud and DevOps concepts, includi
 - Azure RBAC
 - Azure Key Vault
 - GitHub Actions deployment workflows
-
----
 
 ## Resources
 
@@ -28,8 +26,6 @@ This project provisions or references:
 - Azure Entra ID authentication for the Web App
 - Terraform remote state stored in Azure Blob Storage
 
----
-
 ## Module Structure
 
 ```text
@@ -38,11 +34,17 @@ This project provisions or references:
 ├── providers.tf             # Azure provider and OIDC configuration
 ├── backend.tf               # Azure Blob remote-state backend
 ├── data/                    # Existing Azure resource/data lookups
+|    |_ dataMain.tf          # Contains Main.tf file for data module  
+|    |_ dataOut.tf           # Contains the output of the module to be referenced within the root.
 ├── resource/                # Storage Account, Blob container, and SAS generation
+|    |_ resourceMain.tf      # Contains Main.tf file for resource module  
+|    |_ resourceOut.tf       # Contains the output of the module to be referenced within the root.
+|    |_ resourceVar.tf       # Contains the variables of the resource module
 └── KeyVault/                # Azure Key Vault module
+|    |_ keyMain.tf           # Contains Main.tf file for KeyVault module  
+|    |_ KeyOut.tf            # Contains the output of the module to be referenced within the root.
+|    |_ KeyVar.tf            # Contains the variables of the KeyVault module
 ```
-
----
 
 ## Data Module
 
@@ -58,19 +60,14 @@ It retrieves:
 - Client ID
 - Object ID
 
----
-
 ## Resource Module
 
 The **resource** module creates:
 
 - Azure Storage Account
 - Private Blob container
-- Account SAS query string for Blob access
+- Account SAS query string for Blob access. The SAS query string is exported as a **sensitive Terraform output**.
 
-The SAS query string is exported as a **sensitive Terraform output**.
-
----
 
 ## Key Vault Module
 
@@ -84,7 +81,6 @@ The vault is intended to store application secrets such as:
 - Certificates
 - Connection strings (when Managed Identity cannot be used)
 
----
 
 ## Design Decisions
 
@@ -102,8 +98,6 @@ GitHub Variables should contain only non-sensitive configuration values:
 
 Actual secrets should be stored in **Azure Key Vault**, not in GitHub Secrets.
 
----
-
 ### Azure Key Vault Authorization
 
 The Key Vault uses Azure RBAC instead of Key Vault access policies.
@@ -111,8 +105,6 @@ The Key Vault uses Azure RBAC instead of Key Vault access policies.
 ```terraform
 rbac_authorization_enabled = true
 ```
-
----
 
 ## Remote Terraform State
 
@@ -126,8 +118,6 @@ Terraform state is stored in an Azure Storage Account backend.
 - SAS tokens should have only the minimum required permissions.
 - SAS tokens should have a short expiration period.
 
----
-
 ## Prerequisites
 
 Before deploying, ensure you have:
@@ -138,8 +128,6 @@ Before deploying, ensure you have:
 - An Azure Storage Account and Blob container for the Terraform backend
 - An Azure App Registration configured with federated OIDC credentials
 - Required Azure RBAC role assignments
-
----
 
 ## Future Improvements
 
@@ -152,19 +140,9 @@ Planned enhancements include:
 - Add monitoring and diagnostics
 - Improve module reusability
 
----
-
 ## Security Notes
 
 - Avoid storing secret values directly in Terraform resources.
 - Terraform stores resource values inside the state file.
 - Store secrets in Azure Key Vault whenever possible.
 - Prefer Managed Identity over secrets when supported.
-
----
-
-## Status
-
-🚧 This is a learning project and is currently under active development.
-
-It is intended for learning Terraform, Azure, GitHub Actions, and infrastructure best practices. It is **not yet production-ready**.
