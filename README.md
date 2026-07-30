@@ -1,86 +1,170 @@
-Terraform Azure Linux Web App
+# Terraform Azure Linux Web App
 
 A learning-focused Terraform project that provisions Azure infrastructure for a Linux Web App, including an App Service Plan, Storage Account, Key Vault, Azure authentication settings, and remote Terraform state.
 
-The project is being built to learn practical Cloud and DevOps concepts: Terraform modules, remote state, OIDC authentication, managed identities, Azure RBAC, Key Vault, and GitHub Actions deployment workflows.
+The project is being built to learn practical Cloud and DevOps concepts, including:
 
+- Terraform modules
+- Remote state
+- OpenID Connect (OIDC) authentication
+- Managed identities
+- Azure RBAC
+- Azure Key Vault
+- GitHub Actions deployment workflows
 
-#Resources
+---
+
+## Resources
+
 This project provisions or references:
-An existing Azure Resource Group.
-Linux App Service Plan (P1v3).
-Azure Linux Web App.
-Azure Storage Account and private Blob container.\br
-Storage SAS token for Blob Storage logging/backup configuration.\n
-Azure Key Vault configured for Azure RBAC authorization.\br
-Azure Entra ID authentication for the Web App.\n
-Terraform remote state stored in Azure Blob Storage.\n
 
-Module Structure
+- An existing Azure Resource Group
+- Linux App Service Plan (P1v3)
+- Azure Linux Web App
+- Azure Storage Account
+- Private Blob container
+- Storage SAS token for Blob Storage logging/backup configuration
+- Azure Key Vault configured for Azure RBAC authorization
+- Azure Entra ID authentication for the Web App
+- Terraform remote state stored in Azure Blob Storage
+
+---
+
+## Module Structure
+
+```text
 .
 ├── main.tf                  # Root module and Web App resources
 ├── providers.tf             # Azure provider and OIDC configuration
 ├── backend.tf               # Azure Blob remote-state backend
 ├── data/                    # Existing Azure resource/data lookups
-├── resource/                # Storage account, container, and SAS generation
+├── resource/                # Storage Account, Blob container, and SAS generation
 └── KeyVault/                # Azure Key Vault module
+```
 
+---
 
-The data module reads:
-Existing Resource Group name and location.
-Current Azure identity information.
-Tenant ID.
-Subscription ID.
-Client ID and object ID.
-It does not create infrastructure.
+## Data Module
 
+The **data** module reads existing Azure resources and tenant information. It does **not** create any infrastructure.
 
-The resource module creates:
-Storage Account.
-Private Blob container.
-Account SAS query string for Blob access.
-The SAS query string is exported as a sensitive Terraform output.
+It retrieves:
 
-KeyVault module creates:
-The Key Vault module creates a Standard Azure Key Vault with Azure RBAC enabled.
+- Existing Resource Group name
+- Resource Group location
+- Current Azure identity information
+- Tenant ID
+- Subscription ID
+- Client ID
+- Object ID
+
+---
+
+## Resource Module
+
+The **resource** module creates:
+
+- Azure Storage Account
+- Private Blob container
+- Account SAS query string for Blob access
+
+The SAS query string is exported as a **sensitive Terraform output**.
+
+---
+
+## Key Vault Module
+
+The **KeyVault** module creates a **Standard Azure Key Vault** with Azure RBAC enabled.
+
 The vault is intended to store application secrets such as:
-Database passwords.
-Third-party API keys.
-OAuth client secrets.
-Certificates.
-Connection strings, if managed identity cannot be used.
 
-#Design Decisions
-OIDC instead of client secrets. GitHub Actions authenticates to Azure through OpenID Connect (OIDC) federation.
-This avoids storing an Azure client secret in GitHub Secrets. GitHub Variables should contain non-sensitive configuration such as:
-ARM_CLIENT_ID
-ARM_TENANT_ID
-ARM_SUBSCRIPTION_ID
+- Database passwords
+- Third-party API keys
+- OAuth client secrets
+- Certificates
+- Connection strings (when Managed Identity cannot be used)
 
-Actual secret values should be stored in Azure Key Vault, not GitHub Secrets.
-Azure Key Vault uses RBAC. The Key Vault uses:
+---
+
+## Design Decisions
+
+### OpenID Connect (OIDC)
+
+GitHub Actions authenticates to Azure through **OpenID Connect (OIDC)** federation instead of using client secrets.
+
+This avoids storing Azure client secrets in GitHub.
+
+GitHub Variables should contain only non-sensitive configuration values:
+
+- `ARM_CLIENT_ID`
+- `ARM_TENANT_ID`
+- `ARM_SUBSCRIPTION_ID`
+
+Actual secrets should be stored in **Azure Key Vault**, not in GitHub Secrets.
+
+---
+
+### Azure Key Vault Authorization
+
+The Key Vault uses Azure RBAC instead of Key Vault access policies.
+
+```terraform
 rbac_authorization_enabled = true
-Azure RBAC is used instead of Key Vault access policies.
+```
 
+---
 
-#Remote Terraform state
-Terraform state is designed to use an Azure Storage Account backend.
+## Remote Terraform State
 
-#Important considerations:
-A SAS token is a bearer credential.
-Marking an output as sensitive hides it from normal CLI output but does not remove it from Terraform state.
-The remote Terraform state backend must be protected with least-privilege RBAC.
-The SAS should have minimal permissions and a short expiration period.
+Terraform state is stored in an Azure Storage Account backend.
 
+### Important Considerations
 
-#Prerequisites
-Terraform installed.
-Azure subscription and existing Resource Group.
-Azure Storage Account/container for Terraform state.
-Azure App Registration configured with federated OIDC credentials.
-Required Azure RBAC role assignments.
+- A SAS token is a bearer credential.
+- Marking an output as `sensitive` hides it from normal CLI output but **does not remove it from the Terraform state file**.
+- The remote Terraform state backend should be protected using least-privilege Azure RBAC.
+- SAS tokens should have only the minimum required permissions.
+- SAS tokens should have a short expiration period.
 
-Add Terraform variables, environment-specific values, and validation rules.
-Avoid storing secret values directly in Terraform resources because values are saved in Terraform state.
-Status
-This is a learning project and is under active development. It is not yet production-ready.
+---
+
+## Prerequisites
+
+Before deploying, ensure you have:
+
+- Terraform installed
+- An Azure subscription
+- An existing Azure Resource Group
+- An Azure Storage Account and Blob container for the Terraform backend
+- An Azure App Registration configured with federated OIDC credentials
+- Required Azure RBAC role assignments
+
+---
+
+## Future Improvements
+
+Planned enhancements include:
+
+- Add Terraform input variables
+- Support environment-specific configuration
+- Add variable validation rules
+- Expand GitHub Actions CI/CD pipeline
+- Add monitoring and diagnostics
+- Improve module reusability
+
+---
+
+## Security Notes
+
+- Avoid storing secret values directly in Terraform resources.
+- Terraform stores resource values inside the state file.
+- Store secrets in Azure Key Vault whenever possible.
+- Prefer Managed Identity over secrets when supported.
+
+---
+
+## Status
+
+🚧 This is a learning project and is currently under active development.
+
+It is intended for learning Terraform, Azure, GitHub Actions, and infrastructure best practices. It is **not yet production-ready**.
