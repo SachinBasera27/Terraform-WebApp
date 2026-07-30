@@ -10,11 +10,11 @@ This project provisions or references:
 An existing Azure Resource Group.
 Linux App Service Plan (P1v3).
 Azure Linux Web App.
-Azure Storage Account and private Blob container.
-Storage SAS token for Blob Storage logging/backup configuration.
-Azure Key Vault configured for Azure RBAC authorization.
-Azure Entra ID authentication for the Web App.
-Terraform remote state stored in Azure Blob Storage.
+Azure Storage Account and private Blob container.\br
+Storage SAS token for Blob Storage logging/backup configuration.\n
+Azure Key Vault configured for Azure RBAC authorization.\br
+Azure Entra ID authentication for the Web App.\n
+Terraform remote state stored in Azure Blob Storage.\n
 
 Module Structure
 .
