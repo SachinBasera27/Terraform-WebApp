@@ -9,6 +9,10 @@ on:
             - main
     workflow_dispatch:
 
+permissions: 
+    id-token: write
+    contents: read
+    pull-requests: write
 
 jobs: 
     build:
@@ -18,13 +22,62 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
-            - name: Setup terraform
-              uses: actions/setup-terraform@v1
+            - name: Azure Login
+              uses: azure/login@v3
               with:
-                terraform-version: 1.15.8
+                client_id: ${{}}
+                tenant-id: ${{}}
+                subscription-id: ${{}}
+
+             
+            - name: Setup terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                terraform_version: 1.15.8
 
             - name: Verifying installation
               run : terraform -version
-              shell: 
+              shell: bash
+
+            - name: Terraform Formatting
+              run: terraform fmt -check
+
+            - name: Terraform Initialization
+              run: terraform init
+
+            - name: Terraform validate
+              run: terraform validate
+
+            - name: Terraform plan stage
+              run: terraform plan -out main.tfplan
 
 
+
+
+            # - name: Docker login
+            #   uses: docker/login-action@v4
+            #   with: 
+            #         username: ${{secrets.DOCKERHUB_USERNAME}}
+            #         password: ${{secrets.DOCKERHUB_TOKEN}}
+            
+            # # - name: Setup QEMU
+            # #   uses: docker/setup-qemu-action@4
+
+            # - name: Setup docker build
+            #   uses: docker/setup-buildx-action@v4
+
+            # - name: Build and Push
+            #   uses: docker/build-push-action@v7
+            #   with: 
+            #         context: .
+            #         push: true
+            #         tags: sachinbasera27/machop_repos:latest
+
+            #     # run: |
+            #     #     docker login cred
+            #     #     docker build ...
+            #     #     docker 
+
+# https://github.com/azure-samples/terraform-github-actions/blob/main/.github/workflows/tf-plan-apply.yml
+# https://github.com/Azure/login
+# https://github.com/marketplace/actions/build-and-push-docker-images
