@@ -88,7 +88,7 @@ The vault is intended to store application secrets such as:
 
 GitHub Actions authenticates to Azure through **OpenID Connect (OIDC)** federation instead of using client secrets. This avoids storing Azure client secrets in GitHub.
 
-Use the link: https://api.github.com/repos/<Org-Name>/<Repo-Name>
+Use the link: https://api.github.com/repos/Org-Name/Repo-Name
 
 This link would give the information regarding the Organization ID along with Repo ID, which is currently not exposed to the UI.
 
