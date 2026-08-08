@@ -1,0 +1,44 @@
+name: Deploying to the Azure Environment
+
+on:
+    workflow_run:
+        workflows: ["Terraform plan stage"]
+        types: 
+            - completed
+    workflow_dispatch:
+
+
+permissions: 
+    id-token: write
+    contents: read
+    pull-requests: write
+
+
+jobs:
+    deploy:
+        name: Terraform-Apply
+        runs-on: ubuntu-latest
+
+        env:
+            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+            ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+            ARM_USE_OIDC: "true"   
+
+
+        steps:
+
+            - name: Azure Login Step
+              uses: azure/login@v2
+              with: 
+                client-id: ARM_CLIENT_ID
+                tenant-id: ARM_TENANT_ID
+                subscription-id: ARM_SUBSCRIPTION_ID
+
+            - name: Terraform Init
+              run: terraform init
+
+            - name: Adding the Artifact to the runner
+              uses: actions/download-artifact@v4
+              with:
+                name: Terraform-plan
