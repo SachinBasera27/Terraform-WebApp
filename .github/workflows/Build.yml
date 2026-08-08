@@ -16,7 +16,6 @@ permissions:
 
 jobs: 
     build:
-
         runs-on: ubuntu-latest
 
         steps:
@@ -39,6 +38,23 @@ jobs:
               run : terraform -version
               shell: bash
 
+            - name: Installing Python
+              uses: actions/setup-python@v5
+              with: 
+                python-version: 3.13
+
+            - name: Verifying py installation
+              run: python --version
+
+            - name: Installing Checkov
+              run: python -m pip install checkov
+
+            - name: Verifying checkov installation
+              run: checkov --version
+
+            - name: Checkov Checks 
+              run: checkov -d .
+
             - name: Terraform Formatting
               run: terraform fmt -check
 
@@ -47,6 +63,9 @@ jobs:
 
             - name: Terraform validate
               run: terraform validate
+
+            - name: Installing checkov
+              run: pip install checkov
 
             - name: Terraform plan stage
               run: terraform plan -out main.tfplan
