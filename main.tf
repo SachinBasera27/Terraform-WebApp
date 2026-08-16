@@ -30,7 +30,7 @@ resource "azurerm_role_assignment" "Role2" {
 
 # SP will have storage blob data contributor role to access the storage account for backend.tf
 resource "azurerm_role_assignment" "Role3" {
-  scope                = "/subscriptions/${module.data.subscription_id}/resourceGroups/${module.data.Rg-name}/providers/Microsoft.Storage/storageAccounts/stacctf/blobServices/default/containers/tfprod"
+  scope                = "/subscriptions/${module.data.subscription_id}/resourceGroups/${module.data.Rg-name}/providers/Microsoft.Storage/storageAccounts/stacctf/blobServices/default/containers/tf-prod"
   role_definition_name = "Storage Blob Data Contributor"
   principal_id         = module.data.object_id
 }
@@ -44,7 +44,7 @@ resource "azurerm_service_plan" "sp-tf" {
 }
 
 resource "azurerm_linux_web_app" "example" {
-  name                = "webapp"
+  name                = "terraform-webapp"
   resource_group_name = module.data.Rg-name
   location            = module.data.Rg-location
   service_plan_id     = azurerm_service_plan.sp-tf.id
@@ -97,6 +97,3 @@ resource "azurerm_linux_web_app" "example" {
 
   identity { type = "SystemAssigned" }
 }
-
-
-
