@@ -2,7 +2,7 @@ name: Deploying to the Azure Environment
 
 on:
     workflow_run:
-        workflows: ["Terraform artifact stage"]
+        workflows: [Build Pipeline]
         types: 
             - completed
     workflow_dispatch:
@@ -11,10 +11,21 @@ on:
 permissions: 
     id-token: write
     contents: read
-    pull-requests: write
-
 
 jobs:
+
+    on-success:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        steps:
+        - run: echo 'The triggering workflow passed'
+        
+    on-failure:
+        runs-on: ubuntu-latest
+        if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+        steps:
+        - run: echo 'The triggering workflow failed'
+
     deploy:
         name: Terraform-Apply
         runs-on: ubuntu-latest
@@ -25,8 +36,18 @@ jobs:
             ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
             ARM_USE_OIDC: "true"   
 
-
         steps:
+
+            - name: Checkout
+              uses: actions/checkout@v2
+
+            - name: Terraform Installation
+              uses: hashicorp/setup-terraform@v4
+              with:
+                terraform_version: "1.15.8"
+
+            - name: Terraform Init
+              run: terraform init
 
             - name: Azure Login Step
               uses: azure/login@v2
@@ -35,14 +56,18 @@ jobs:
                 tenant-id: ARM_TENANT_ID
                 subscription-id: ARM_SUBSCRIPTION_ID
 
-            - name: Terraform Init
-              run: terraform init
-
             - name: Adding the Artifact to the runner
               uses: actions/download-artifact@v4
               with:
                 name: Terraform-plan
+                run-id: ${{github.event.workflow_run.id}}
+                github-token: ${{github.token}}
 
 
             - name: Terraform Apply
-              run: Terraform apply -auto-approve tfplan
+              run: terraform apply -auto-approve tfplan
+
+
+# https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_call
+# https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow
+# https://github.com/hashicorp/setup-terraform

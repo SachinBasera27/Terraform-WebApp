@@ -66,7 +66,7 @@ jobs:
               run: terraform validate
 
             - name: Terraform plan stage
-              run: terraform plan -out main.tfplan
+              run: terraform plan -out tfplan
 
             - name: Terraform artifact stage
               uses: actions/upload-artifact@v4
