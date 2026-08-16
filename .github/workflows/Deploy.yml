@@ -31,10 +31,7 @@ jobs:
         runs-on: ubuntu-latest
 
         env:
-            ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-            ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-            ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-            ARM_USE_OIDC: "true"   
+            ARM_USE_OIDC: "true"    # Used to tell terraform to use OIDC 
 
         steps:
 
@@ -52,9 +49,9 @@ jobs:
             - name: Azure Login Step
               uses: azure/login@v2
               with: 
-                client-id: ARM_CLIENT_ID
-                tenant-id: ARM_TENANT_ID
-                subscription-id: ARM_SUBSCRIPTION_ID
+                client-id: ${{ secrets.ARM_CLIENT_ID }}
+                tenant-id: ${{ secrets.ARM_TENANT_ID }}
+                subscription-id: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
             - name: Adding the Artifact to the runner
               uses: actions/download-artifact@v4
