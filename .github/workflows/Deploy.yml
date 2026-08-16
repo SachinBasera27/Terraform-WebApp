@@ -2,7 +2,7 @@ name: Deploying to the Azure Environment
 
 on:
     workflow_run:
-        workflows: ["Terraform plan stage"]
+        workflows: ["Terraform artifact stage"]
         types: 
             - completed
     workflow_dispatch:
