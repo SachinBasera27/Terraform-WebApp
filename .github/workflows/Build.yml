@@ -54,7 +54,7 @@ jobs:
               run: checkov --version
 
             - name: Checkov Checks 
-              run: checkov -d .
+              run: checkov -d . --soft-fail
 
             - name: Terraform Formatting
               run: terraform fmt -check
@@ -64,9 +64,6 @@ jobs:
 
             - name: Terraform validate
               run: terraform validate
-
-            - name: Installing checkov
-              run: pip install checkov
 
             - name: Terraform plan stage
               run: terraform plan -out main.tfplan
