@@ -1,4 +1,4 @@
-name: Deploying to the Azure Environment
+name: Deploy Pipeline
 
 on:
     workflow_run:
